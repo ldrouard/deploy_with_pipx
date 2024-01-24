@@ -1,0 +1,15 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Workaround
+      ansible.builtin.raw: apt-get update
+      changed_when: false
+
+    - name: Install minimal ansible requirement for Ubuntu
+      ansible.builtin.raw: >
+        apt-get update && \
+        apt-get install -y --no-install-recommends python3 sudo
+      # when: "'ubuntu' is in lookup('ansible.builtin.env', 'MOLECULE_DISTRO')"
+      changed_when: false

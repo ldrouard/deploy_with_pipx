@@ -1,0 +1,10 @@
+---
+profile: production
+exclude_paths:
+  - .github/
+
+warn_list:
+  - meta-no-info
+
+skip_list:
+  - yaml[line-length]

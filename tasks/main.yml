@@ -1,0 +1,70 @@
+---
+- name: Install pipx
+  become: true
+  ansible.builtin.package:
+    name:
+      - pipx
+      - python3-argcomplete
+    state: present
+
+- name: Check /etc/bash_completion.d/
+  register: __bash_completion
+  ansible.builtin.stat:
+    path: /etc/bash_completion.d
+
+- name: Enable pipx Bash completion
+  become: true
+  when: __bash_completion.stat.exists
+  ansible.builtin.copy:
+    content: |
+      # Enable bash Completions for pipx
+      command -v pipx >/dev/null && eval "$(register-python-argcomplete3 pipx)"
+    dest: /etc/bash_completion.d/3rd-part_pipx
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
+- name: Get user's env PATH
+  become: "{{ 'false' if deploy_with_pipx_user == lookup('env', 'USER') else 'true' }}"
+  become_user: "{{ deploy_with_pipx_user }}"
+  become_flags: '--login'
+  register: __env
+  changed_when: false
+  ansible.builtin.command:
+    cmd: 'echo "${PATH}"'
+
+- name: Add extra path for all users in /etc/profile.d
+  become: true
+  when: "'/.local/bin' not in __env.stdout"
+  ansible.builtin.copy:
+    dest: /etc/profile.d/3rd-part_pip_pipx-path.sh
+    content: |-
+      # Added by Ansible (Role = {{ role_name }})
+      # set PATH so it includes user's private bin if it exists
+      if [ -d "$HOME/.local/bin" ] ; then
+      PATH="$HOME/.local/bin:$PATH"
+      fi
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
+- name: Install or remove pip packages (--force)
+  become: "{{ 'false' if deploy_with_pipx_user == lookup('env', 'USER') else 'true' }}"
+  become_user: "{{ deploy_with_pipx_user }}"
+  environment:
+    PIPX_HOME: "{{ deploy_with_pipx_home }}"
+    PIPX_BIN_DIR: "{{ deploy_with_pipx_bin_dir }}"
+  loop: "{{ deploy_with_pipx_packages_list }}"
+  loop_control:
+    loop_var: deploy_with_pipx_package
+  when:
+    - deploy_with_pipx_packages_list is defined
+    - deploy_with_pipx_packages_list not in [None, '']
+  community.general.pipx:
+    name: "{{ deploy_with_pipx_package.name }}"
+    source: "{{ deploy_with_pipx_package.name }}{{ deploy_with_pipx_package.version_constraint | default(None) }}"
+    state: "{{ deploy_with_pipx_package.state | default('present') }}"
+    # Workaround: Add 'force: true' to enable pipx upgrade package, with
+    # drawback, a not idempotent role.
+    force: true
+    install_deps: true
