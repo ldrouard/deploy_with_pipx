@@ -1,0 +1,6 @@
+---
+- name: Test playbook for deploy_with_pipx
+  hosts: localhost
+  remote_user: root
+  roles:
+    - deploy_with_pipx

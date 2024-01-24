@@ -1,0 +1,19 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Include role
+      ansible.builtin.include_role:
+        name: deploy_with_pipx
+      vars:
+        # deploy_with_pipx_user: root
+        deploy_with_pipx_user: usertest
+        deploy_with_pipx_home: /home/usertest
+        deploy_with_pipx_bin_dir: /home/usertest/.local/bin
+        deploy_with_pipx_packages_list:
+          - name: yq
+            version_constraint: '==3.2.1'
+          - name: jq
+          - name: jq
+            state: absent

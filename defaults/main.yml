@@ -1,0 +1,5 @@
+---
+deploy_with_pipx_home: "{{ ansible_user_dir }}/.local/pipx/"
+deploy_with_pipx_bin_dir: "{{ ansible_user_dir }}/.local/bin/"
+deploy_with_pipx_user: "{{ ansible_user_id }}"
+deploy_with_pipx_packages_list: []

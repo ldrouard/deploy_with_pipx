@@ -1,0 +1,43 @@
+---
+ci:
+  autoupdate_schedule: monthly
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Fix trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+        name: Fix end-of-file
+      - id: check-yaml
+        name: Check YAML
+      - id: check-added-large-files
+        name: Check added large files
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.22.0
+    hooks:
+      - id: commitizen
+        name: Commitizen
+        stages:
+          - commit-msg
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: YAML Lint
+        files: \.(yaml|yml)$
+        types: [file, yaml]
+        entry: yamllint --strict
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v24.2.2
+    hooks:
+      - id: ansible-lint
+        name: Ansible Lint
+        description: Run configurations on .ansible-lint file
+        files: \.(yaml|yml)$
+        # verbose: true
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks

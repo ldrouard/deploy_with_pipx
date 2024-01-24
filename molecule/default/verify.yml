@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if pipx is installed
+      ansible.builtin.package:
+        name: pipx
+        state: present
+      check_mode: true
+      register: __pkg
+
+    - name: Fail if package was not installed
+      ansible.builtin.assert:
+        that:
+          - __pkg.changed is false
+        fail_msg: "Package pipx was not installed!"
+        success_msg: "Package pipx was installed."
+
+    - name: Check if yq is installed with pipx
+      ansible.builtin.stat:
+        name: /home/usertest/.local/bin/yq
+      register: __file
+
+    - name: Fail if yq was not installed
+      ansible.builtin.assert:
+        that:
+          - __file.stat.exists
+          - __file.stat.islnk
+          - __file.stat.lnk_source == '/home/usertest/venvs/yq/bin/yq'
+        fail_msg: "Package yq was not installed correcly!"
+        success_msg: "Package yq was installed."

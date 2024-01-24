@@ -1,0 +1,40 @@
+---
+# Code linting is run during the Pre-Commit step
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: podman
+  options:
+    managed: false
+    login_cmd_template: "podman exec -ti {instance} bash"
+    ansible_connection_options:
+      ansible_connection: podman
+platforms:
+  # Use specialized container for Ansible playbook and role testing.
+  # Contains python, systemd, etc.
+  - name: ubuntu-lts-22.04
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+    command: "/lib/systemd/systemd"
+    pre_build_image: true
+    network: host
+#  - name: ubuntu-lts-20.04
+#    image: docker.io/geerlingguy/docker-ubuntu2004-ansible:latest
+#    volumes:
+#      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+#    capabilities:
+#      - SYS_ADMIN
+#    command: "/lib/systemd/systemd"
+#    pre_build_image: true
+#    network: host
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: prepare.yml
+# verifier:
+#   name: ansible
