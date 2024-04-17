@@ -1,5 +1,8 @@
 ---
 collections:
+  # https://github.com/ansible-collections/community.general
   - name: community.general
-    version: 8.2.0
-#    source: https://galaxy.ansible.com
+    version: 8.6.0
+  # https://github.com/containers/ansible-podman-collections
+  - name: containers.podman
+    version: 1.13.0

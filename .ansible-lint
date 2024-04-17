@@ -1,8 +1,12 @@
 ---
 profile: production
+
+verbosity: 1
+
 exclude_paths:
   - .cache/
   - .github/
+  - tests/
 
 warn_list:
   - meta-no-info

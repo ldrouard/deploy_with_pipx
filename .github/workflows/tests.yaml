@@ -1,0 +1,34 @@
+name: Validate
+on:
+#  pull_request:
+#    branches: ["main"]
+  push:
+    branches: ["dev"]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+jobs:
+  molecule:
+    name: Validate with molecule
+    timeout-minutes: 10
+    runs-on: ubuntu-22.04
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout code from repo
+        id: checkout
+        uses: actions/checkout@v4.1.4
+#        with:
+#          path: "${{ github.repository }}"*
+      - name: debug
+        run: podman info
+        # This is necessary on GH Actions to allow running systemd in rootless containers
+        # see: https://github.com/actions/virtual-environments/issues/3536
+        # see: https://github.com/ansible-community/molecule/discussions/3155
+      - name: Start systemd user service
+        run: |
+          loginctl enable-linger $(whoami)
+          sleep 1
+      # https://github.com/gofrolist/molecule-action
+      - name: Run molecule tests
+        id: molecule
+        uses: gofrolist/molecule-action@v2.7.17
