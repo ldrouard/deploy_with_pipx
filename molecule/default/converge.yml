@@ -14,6 +14,6 @@
         deploy_with_pipx_packages_list:
           - name: yq
             version_constraint: '==3.2.1'
-          - name: jq
-          - name: jq
+          - name: cowsay
+          - name: cowsay
             state: absent
