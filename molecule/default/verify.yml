@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: all
+  hosts: molecule
   gather_facts: false
   tasks:
     - name: Check if pipx is installed
@@ -10,7 +10,7 @@
       check_mode: true
       register: __pkg
 
-    - name: Fail if package was not installed
+    - name: Fail if pipx package was not installed
       ansible.builtin.assert:
         that:
           - __pkg.changed is false
