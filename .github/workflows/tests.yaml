@@ -11,14 +11,14 @@ jobs:
   molecule:
     name: Validate with molecule
     timeout-minutes: 10
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # https://github.com/actions/checkout
       - name: Checkout code from repo
         id: checkout
-        uses: actions/checkout@v4.1.4
-#        with:
-#          path: "${{ github.repository }}"*
+        uses: actions/checkout@v4.2.2
+        with:
+          path: "${{ github.repository }}"
       - name: debug
         run: podman info
         # This is necessary on GH Actions to allow running systemd in rootless containers
@@ -27,8 +27,8 @@ jobs:
       - name: Start systemd user service
         run: |
           loginctl enable-linger $(whoami)
-          sleep 1
+          sleep 1s
       # https://github.com/gofrolist/molecule-action
       - name: Run molecule tests
         id: molecule
-        uses: gofrolist/molecule-action@v2.7.17
+        uses: gofrolist/molecule-action@v2.7.40
