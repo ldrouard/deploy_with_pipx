@@ -25,9 +25,9 @@
       register: result
       loop: "{{ molecule_yml.platforms }}"
 
-    - name: Print some info
-      ansible.builtin.debug:
-        msg: "{{ result.results }}"
+#    - name: Print some info
+#      ansible.builtin.debug:
+#        msg: "{{ result.results }}"
 
     - name: Fail if container is not running
       when: >

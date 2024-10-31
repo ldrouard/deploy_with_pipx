@@ -15,7 +15,7 @@ platforms:
   # Use specialized container for Ansible playbook and role testing.
   # Contains python, systemd, etc.
   - name: ubuntu-lts-24.04
-    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+    image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     capabilities:
