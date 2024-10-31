@@ -14,15 +14,27 @@ driver:
 platforms:
   # Use specialized container for Ansible playbook and role testing.
   # Contains python, systemd, etc.
+  # Doc: https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
   - name: ubuntu-lts-24.04
     image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     capabilities:
       - SYS_ADMIN
-    command: "/lib/systemd/systemd"
+    #command: "/lib/systemd/systemd"
+    command: "/usr/sbin/init"
+    privileged: true
+    systemd: true
+    tmpfs:
+      - /run
+      - /tmp
     pre_build_image: true
-    network: host
+#    network: slirp4netns
+#    tty: true
+#    interactive: true
+#    network: host
+
+
 #  - name: ubuntu-lts-22.04
 #    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
 #    volumes:
@@ -43,7 +55,24 @@ platforms:
 #    network: host
 provisioner:
   name: ansible
-  playbooks:
-    prepare: prepare.yml
+  env:
+    # Default value
+    ANSIBLE_DISPLAY_OK_HOSTS: "true"
+    ANSIBLE_DISPLAY_SKIPPED_HOSTS: true
+  config_options:
+    defaults:
+      # Enable debug level
+      #   verbosity 0 (default)
+      #   verbosity 1 (-v): shows task names and outputs of those tasks.
+      #   verbosity 2 (-vv): provides more detailed information about the tasks, including variables, module options, and other details.
+      #   verbosity 2 (-vvv): displays extensive information, including the full JSON representation of tasks and modules.
+      verbosity: 2
+    # https://github.com/ansible/molecule/issues/3063
+    ssh_connection:
+      pipelining: true
+#  options:
+#     vvv: True
+#  playbooks:
+#    prepare: prepare.yml
 # verifier:
 #   name: ansible

@@ -9,26 +9,54 @@ on:
       - 'LICENSE'
 jobs:
   molecule:
-    name: Validate with molecule
+    name: Validate codes with molecule
     timeout-minutes: 10
+    # https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
     runs-on: ubuntu-24.04
     steps:
-      # https://github.com/actions/checkout
-      - name: Checkout code from repo
+      # Default user : runner
+
+      - name: Requirement - Start systemd user service
+        # This is necessary on GH Actions to allow running systemd in rootless containers
+        # see: https://github.com/actions/virtual-environments/issues/3536
+        # see: https://github.com/ansible-community/molecule/discussions/3155
+        run: |
+          loginctl enable-linger "$(whoami)"
+          sleep 1s
+      
+      - name: Debug - WIP
+        run: |
+          unshare -U echo hello
+          cat /etc/subuid
+          
+          # KO
+          #getenforce
+          
+          # ok
+          #podman run --rm --rmi hello-world
+
+          # ok
+          #sudo podman run --rm --rmi hello-world
+          
+          # ok
+          #podman pull docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+
+          # Ok
+          #podman run --rm --rmi --detach --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+          #sleep 3s
+          #podman ps -a
+
+      - name: Debug - Podman info
+        run: podman info
+      
+      - name: Git - checkout codes from repo
+        # https://github.com/actions/checkout
         id: checkout
         uses: actions/checkout@v4.2.2
         with:
           path: "${{ github.repository }}"
-      - name: debug
-        run: podman info
-        # This is necessary on GH Actions to allow running systemd in rootless containers
-        # see: https://github.com/actions/virtual-environments/issues/3536
-        # see: https://github.com/ansible-community/molecule/discussions/3155
-      - name: Start systemd user service
-        run: |
-          loginctl enable-linger $(whoami)
-          sleep 1s
-      # https://github.com/gofrolist/molecule-action
-      - name: Run molecule tests
+
+      - name: Molecule - Run tests
+        # https://github.com/gofrolist/molecule-action
         id: molecule
-        uses: gofrolist/molecule-action@v2.7.40
+        uses: gofrolist/molecule-action@v2.7.46

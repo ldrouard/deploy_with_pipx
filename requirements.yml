@@ -2,7 +2,7 @@
 collections:
   # https://github.com/ansible-collections/community.general
   - name: community.general
-    version: 9.5.0
+    version: 10.1.0
   # https://github.com/containers/ansible-podman-collections
   - name: containers.podman
-    version: 1.16.1
+    version: 1.16.2

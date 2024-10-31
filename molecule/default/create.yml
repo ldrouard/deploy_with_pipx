@@ -63,6 +63,11 @@
         dest: "{{ molecule_ephemeral_directory }}/inventory/molecule_inventory.yml"
         mode: "0600"
 
+    - name: Display molecule_inventory
+      ansible.builtin.debug:
+        msg: "{{ molecule_inventory | to_yaml }}"
+
+
     - name: Force inventory refresh
       ansible.builtin.meta: refresh_inventory
 
