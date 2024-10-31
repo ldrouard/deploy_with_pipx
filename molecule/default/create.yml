@@ -1,3 +1,4 @@
+---
 - name: Create
   hosts: localhost
   gather_facts: false
@@ -25,9 +26,9 @@
       register: result
       loop: "{{ molecule_yml.platforms }}"
 
-#    - name: Print some info
-#      ansible.builtin.debug:
-#        msg: "{{ result.results }}"
+    # - name: Print some info
+    #   ansible.builtin.debug:
+    #     msg: "{{ result.results }}"
 
     - name: Fail if container is not running
       when: >
@@ -70,7 +71,7 @@
         that: "'molecule' in groups"
         fail_msg: |
           molecule group was not found inside inventory groups: {{ groups }}
-      run_once: true # noqa: run-once[task]
+      run_once: true   # noqa: run-once[task]
 
 # we want to avoid errors like "Failed to create temporary directory"
 - name: Validate that inventory was refreshed
